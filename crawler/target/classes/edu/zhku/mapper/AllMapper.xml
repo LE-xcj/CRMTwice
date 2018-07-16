@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.zhku.mapper.AllMapper">
+
+
+	<insert id="insertKe" parameterType="java.util.Map">
+		insert into t_class (cid, cname) values
+		<foreach collection="kes.entrySet()" index="key" item="value" separator=",">
+			  (#{key}, #{value})
+		</foreach>
+		
+	</insert>
+	
+	<insert id="insertAddress" parameterType="java.util.List">
+		insert into t_address (xq, jxl, ks, cid, term) values
+		<foreach collection="list" index="index" item="item" separator=",">
+			(
+				#{item.xq}, #{item.jxl},
+				#{item.ks}, #{item.cid},
+				#{item.term}
+			
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertTime" parameterType="java.util.List">
+		insert into t_time (term, week, day, cid, consist, num, tname) values
+		<foreach collection="list" index="index" item="item" separator=",">
+			(
+				#{item.term}, #{item.week},
+				#{item.day}, #{item.cid},
+				#{item.consist}, #{item.num},
+				#{item.tname}
+			
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertArrange" parameterType="java.util.List">
+		insert into t_arrange (term, week, day, cid, consist, num, tname, xq, jxl, ks) values
+		<foreach collection="list" index="index" item="item" separator=",">
+			(
+				#{item.term}, #{item.week},
+				#{item.day}, #{item.cid},
+				#{item.consist}, #{item.num},
+				#{item.tname}, #{item.xq}, 
+				#{item.jxl}, #{item.ks}
+			
+			)
+		</foreach>
+	</insert>
+
+</mapper>
