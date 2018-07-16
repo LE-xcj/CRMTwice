@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.zhku.mapper.CRMapper">
+
+
+	<resultMap id="termMap" type="edu.zhku.pojo.Term">
+		<id column="id" property="id" />
+		<result column="term" property="term" />
+		<result column="begin" property="begin" />
+		<result column="end" property="end" />
+		<result column="weeks" property="weeks" />
+	</resultMap>
+	<select id="getTerm" resultMap="termMap">
+		select * from t_term order by term desc
+	</select>
+	
+	<resultMap id="crMap" type="edu.zhku.pojo.ClassRoom">
+		<id column="id" property="id" />
+		<result column="xq" property="xq" />
+		<result column="jxl" property="jxl" />
+		<result column="ks" property="ks" />
+	</resultMap>
+	<select id="getClassRoom" resultMap="crMap">
+		select * from t_classroom where xq = #{xq}
+	</select>
+	
+	<resultMap id="srvo" type="edu.zhku.pojo.SearchResultVO">
+		<result column="cname" property="cname" />
+		<result column="cid" property="cid" />
+		<result column="weeks" property="weeks" />
+		<result column="day" property="day" />
+		<result column="tname" property="tname" />
+		<result column="consist" property="consist" />
+		<result column="num" property="num" />
+	</resultMap>
+	<select id="getCRUseState" parameterType="edu.zhku.pojo.SearchVO" resultMap="srvo">
+		select tc.cname , ta.* from 
+			(select cid, weeks, day, tname, consist, num  
+				from t_arrange where xq =#{cr.xq} and jxl = #{cr.jxl} and ks = #{cr.ks} and term = #{term}) ta
+			LEFT JOIN
+			(select DISTINCT cid, cname from t_class) tc on ta.cid = tc.cid
+		
+	</select>
+	
+	<resultMap id="crs" type="edu.zhku.pojo.CRState">
+		<result column="weeks" property="weeks" />
+		<result column="day" property="day" />
+		<result column="ks" property="ks" />
+	</resultMap>
+	<select id="getCRState" parameterType="edu.zhku.pojo.SearchFCRVO" resultMap="crs">
+		select weeks, day, ks from t_arrange 
+			where xq =#{cr.xq} and jxl = #{cr.jxl} and term = #{term}
+	</select>
+	
+	<resultMap id="arrangeMap" type="edu.zhku.pojo.Arrange">
+		<result column="weeks" property="weeks" />
+		<result column="day" property="day" />
+		<result column="ks" property="ks" />
+	</resultMap>
+	<select id="getCRArrange" parameterType="edu.zhku.pojo.SearchFSVO" resultMap="arrangeMap">
+		select ks, weeks, day from t_arrange 
+			where ks=#{ks} and jxl =#{jxl} and xq =#{xq} and term = #{term}
+	</select>
+	
+	<insert id="petchInsertRecord" parameterType="java.util.List">
+		insert into t_record (term, xq, jxl, ks, cid, weeks, day, consist, num, tname)
+		values
+    	<foreach collection="list" index="index" item="item" separator=",">  
+    		(
+    			#{item.term}, #{item.xq}, #{item.jxl}, #{item.ks},
+    			#{item.cid}, #{item.weeks}, #{item.day},
+    			#{item.consist}, #{item.num}, #{item.tname}
+    		)
+      	 </foreach>
+	</insert>
+	
+	<select id="getCRStateBySearch" parameterType="edu.zhku.pojo.Search" resultMap="crs">
+		select weeks, day from t_record
+			where ks=#{ks} and xq =#{xq} and jxl = #{jxl} and term = #{term}
+	
+	</select>
+</mapper>
