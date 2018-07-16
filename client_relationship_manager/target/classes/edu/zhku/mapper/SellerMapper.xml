@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.zhku.mapper.SellerMapper">
+	<resultMap id="sellerMap" type="edu.zhku.pojo.Seller">
+		<id column="sid" property="sid" jdbcType="VARCHAR" />
+		<result column="sname" property="sname" jdbcType="VARCHAR" />
+		<result column="psw" property="psw" jdbcType="CHAR" />
+		<result column="sex" property="sex" jdbcType="CHAR" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="job" property="job" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+		<result column="phone" property="phone" jdbcType="CHAR" />
+		<result column="email" property="eMail" jdbcType="CHAR" />
+		<result column="indroduction" property="indroduction" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="billMap" type="edu.zhku.pojo.Bill">
+		<id column="bid" property="bid" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="REAL" />
+		<result column="createTime" property="createtime" jdbcType="DATE" />
+		<result column="statue" property="statue" jdbcType="INTEGER" />
+		<result column="sid" property="sid" jdbcType="VARCHAR" />
+		<result column="cid" property="cid" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 使用动态sql，通过if判断，对满足条件进行sql语句拼接 -->
+	<!-- 查询时，通过ItemVo包装类中的itemExpend属性进行传递 -->
+	<sql id="query_seller_where">
+		<!-- 属性不能为空 -->
+		<if test="sid != null">
+			sid = #{sid}
+		</if>
+		<if test="psw != null">
+			and psw = #{psw}
+		</if>
+	</sql>
+
+	<sql id="query_bill_where">
+		<!-- 属性不能为空 -->
+		<if test="sid != null">
+			sid = #{sid} and
+		</if>
+		<trim prefixOverrides="or">
+
+			<if test="cancel">
+				or statue = -2
+			</if>
+			<if test="reject">
+				or statue = -1
+			</if>
+			<if test="undeal">
+				or statue = 0
+			</if>
+			<if test="progressing">
+				or statue = 1
+			</if>
+			<if test="complete">
+				or statue = 2
+			</if>
+		</trim>
+
+	</sql>
+
+	<!-- parameterType: 传入的包装对象（包装了查询条件） resultType : 建议使用扩展包装类 -->
+	<select id="findSeller" resultMap="sellerMap" parameterType="edu.zhku.pojo.Seller">
+		select * from t_seller
+		<where>
+			<include refid="query_seller_where"></include>
+		</where>
+	</select>
+
+	<insert id="regist" parameterType="edu.zhku.pojo.Seller">
+		insert into t_seller (sid,
+		sname, psw)
+		values(
+		#{sid,jdbcType=VARCHAR},
+		#{sname,jdbcType=VARCHAR},
+		#{psw,jdbcType=CHAR},
+		#{level,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<!-- <insert id="createBill" parameterType="edu.zhku.pojo.Bill"> insert 
+		into t_bill (bid, money, createTime, statue, sid, cid) values (#{bid, #{money, 
+		#{createtime}, #{statue, #{sid, #{cid) </insert> -->
+
+	<insert id="createBill" parameterType="edu.zhku.pojo.Bill">
+		insert into t_bill
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bid != null">
+				bid,
+			</if>
+			<if test="money != null">
+				money,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="statue != null">
+				statue,
+			</if>
+			<if test="sid != null">
+				sid,
+			</if>
+			<if test="cid != null and cid != ''">
+				cid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bid != null">
+				#{bid},
+			</if>
+			<if test="money != null">
+				#{money},
+			</if>
+			<if test="createtime != null">
+				#{createtime},
+			</if>
+			<if test="statue != null">
+				#{statue},
+			</if>
+			<if test="sid != null">
+				#{sid},
+			</if>
+			<if test="cid != null and cid != ''">
+				#{cid},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="getBill" resultMap="billMap" parameterType="edu.zhku.pojo.BillCondition">
+		select * from t_bill
+		<where>
+			<include refid="query_bill_where"></include>
+		</where>
+	</select>
+
+	<update id="updateBill" parameterType="edu.zhku.pojo.Bill">
+		update t_bill
+		<set>
+			<if test="money != null">
+				money = #{money},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=DATE},
+			</if>
+			<if test="statue != null">
+				statue = #{statue,jdbcType=INTEGER},
+			</if>
+			<if test="sid != null">
+				sid = #{sid,jdbcType=VARCHAR},
+			</if>
+			<if test="cid != null">
+				cid = #{cid,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where bid = #{bid,jdbcType=VARCHAR}
+
+	</update>
+
+	<resultMap id="bvoMap" type="edu.zhku.pojo.BillVO">
+		<id column="bid" property="bid" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="REAL" />
+		<result column="createTime" property="createtime" jdbcType="DATE" />
+		<result column="statue" property="statue" jdbcType="INTEGER" />
+		<result column="sid" property="sid" jdbcType="VARCHAR" />
+		<result column="cid" property="cid" jdbcType="VARCHAR" />
+		<association property="client" javaType="edu.zhku.pojo.Client">
+			<id column="cid" property="cid" jdbcType="VARCHAR" />
+			<result column="cname" property="cname" jdbcType="VARCHAR" />
+			<result column="psw" property="psw" jdbcType="CHAR" />
+			<result column="sex" property="sex" jdbcType="CHAR" />
+			<result column="birthday" property="birthday" jdbcType="DATE" />
+			<result column="job" property="job" jdbcType="VARCHAR" />
+			<result column="phone" property="phone" jdbcType="CHAR" />
+			<result column="address" property="address" jdbcType="VARCHAR" />
+			<result column="cemail" property="eMail" jdbcType="VARCHAR" />
+		</association>
+
+		<association property="seller" javaType="edu.zhku.pojo.Seller">
+			<id column="sid" property="sid" jdbcType="VARCHAR" />
+			<result column="sname" property="sname" jdbcType="VARCHAR" />
+			<result column="psw" property="psw" jdbcType="CHAR" />
+			<result column="sex" property="sex" jdbcType="CHAR" />
+			<result column="birthday" property="birthday" jdbcType="DATE" />
+			<result column="address" property="address" jdbcType="VARCHAR" />
+			<result column="job" property="job" jdbcType="VARCHAR" />
+			<result column="level" property="level" jdbcType="INTEGER" />
+			<result column="sphone" property="phone" jdbcType="CHAR" />
+			<result column="semail" property="eMail" jdbcType="CHAR" />
+			<result column="indroduction" property="indroduction" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	
+	<select id="getBillDetailByBid" resultMap="bvoMap">
+		select tbs.*, tc.cname cname, tc.email cemail
+		from (
+			select tb.* , ts.sname sname, ts.email semail, ts.phone sphone 
+				from t_bill tb, t_seller ts WHERE bid =#{bid} and tb.sid = ts.sid ) tbs
+		LEFT JOIN t_client tc on tbs.cid = tc.cid
+	</select>
+	
+	<select id="getCompleteBill" resultMap="bvoMap">
+		select tb.*, tc.* from(
+			select * from t_bill where sid = #{sid} and statue = 2 
+				and createTime > CONCAT(#{year},'') and createTime &lt; CONCAT(#{year}+1,'') ORDER BY createTime
+		) tb LEFT JOIN t_client tc on tb.cid = tc.cid LIMIT #{begin},#{size}
+	 
+	</select>
+
+
+	<select id="getPersonlBillForYear" resultMap="billMap">
+			SELECT * from t_bill where sid=#{sid} and statue = 2 and createTime > #{bYear} and createTime &lt; #{eYear}
+	</select>
+	
+	<resultMap id="clientMap" type="edu.zhku.pojo.Client">
+		<id column="cid" property="cid" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="psw" property="psw" jdbcType="CHAR" />
+		<result column="sex" property="sex" jdbcType="CHAR" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="job" property="job" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="CHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="email" property="eMail" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="countClient" resultType="java.lang.Integer">
+		select count(*) num from t_client
+	</select>
+	
+	<insert id="petchImportClientImfor" parameterType="java.util.List">
+		REPLACE into t_client (cid, cname, psw, sex, birthday, job, phone, address, email)
+   			 values 
+    	<foreach collection="list" index="index" item="item" separator=",">  
+	        (#{item.cid,jdbcType=VARCHAR}, #{item.cname,jdbcType=VARCHAR}, #{item.psw,jdbcType=CHAR}, 
+	     	 #{item.sex,jdbcType=CHAR}, #{item.birthday,jdbcType=DATE}, #{item.job,jdbcType=VARCHAR}, 
+	     	 #{item.phone,jdbcType=CHAR}, #{item.address,jdbcType=VARCHAR}, #{item.eMail,jdbcType=VARCHAR})
+      	 </foreach>
+	</insert>
+	
+	<select id="showClientsForPage" resultMap="clientMap">
+		select * from t_client limit #{begin},#{size}
+	</select>
+	
+	<select id="searchClientByName" resultMap="clientMap">
+		select * from t_client where cname like "%"#{cname}"%"
+	</select>
+	
+	<select id="getTimeDistance" resultType="edu.zhku.pojo.TimeDistance">
+		select DISTINCT min(createTime) minT, max(createTime) maxT from t_bill WHERE sid = #{sid} and statue = 2
+	</select>
+	
+	
+	
+	<select id="countValueClient" resultType="java.lang.Integer">
+		select count(*) vn from (
+			select * from t_client tc join
+				 (select cid tcid, sid, count(*) num, SUM(money) money  from t_bill where sid=#{sid} GROUP BY cid ) t on tc.cid = t.tcid 
+				 	ORDER BY money DESC
+		) t_count
+	</select>
+	
+	<select id="countProClient" resultType="java.lang.Integer">
+		select count(*) from t_client where cid not in(
+			select DISTINCT cid from t_bill where cid is not NULL
+			) 
+	</select>
+	
+	<resultMap id="clientVOMap" type="edu.zhku.pojo.ClientVO">
+		<id column="cid" property="cid" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="psw" property="psw" jdbcType="CHAR" />
+		<result column="sex" property="sex" jdbcType="CHAR" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="job" property="job" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="CHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="email" property="eMail" jdbcType="VARCHAR" />
+		<result column="money" property="money" />
+		<result column="num" property="num" />
+	</resultMap>
+	<select id="getValueClient" resultMap="clientVOMap">
+		select * from t_client tc join (
+			select cid tcid, sid, count(*) num, SUM(money) money  from t_bill where sid=#{sid} GROUP BY cid ) t on tc.cid = t.tcid 
+				ORDER BY money DESC LIMIT #{begin},#{size}
+	</select>
+	
+	<select id="getProClient" resultMap="clientMap">
+		select * from t_client where cid not in(
+			select DISTINCT cid from t_bill where cid is not NULL
+		) LIMIT #{begin},#{size}
+	</select>
+	
+</mapper>

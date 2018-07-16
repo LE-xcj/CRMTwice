@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.zhku.mapper.EVAMapper">
+
+
+	<resultMap id="evaVOMap" type="edu.zhku.pojo.EVAVO">
+		<id column="id" property="id" />
+		<result column="level" property="level" />
+		<result column="evaluation" property="evaluation" />
+		<result column="sid" property="sid" />
+		<result column="cid" property="cid" />
+		<result column="etime" property="etime" jdbcType="DATE" />
+		<association property="client" javaType="edu.zhku.pojo.Client">
+			<id column="cid" property="cid" jdbcType="VARCHAR" />
+			<result column="cname" property="cname" jdbcType="VARCHAR" />
+			<result column="psw" property="psw" jdbcType="CHAR" />
+			<result column="sex" property="sex" jdbcType="CHAR" />
+			<result column="birthday" property="birthday" jdbcType="DATE" />
+			<result column="job" property="job" jdbcType="VARCHAR" />
+			<result column="phone" property="phone" jdbcType="CHAR" />
+			<result column="address" property="address" jdbcType="VARCHAR" />
+			<result column="cemail" property="eMail" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<select id="getSatisfaction" resultMap="evaVOMap">
+		SELECT te.*,tc.* from
+	(SELECT * from t_evaluation where sid = #{sid}) te LEFT JOIN t_client tc on te.cid = tc.cid
+	</select>
+
+</mapper>

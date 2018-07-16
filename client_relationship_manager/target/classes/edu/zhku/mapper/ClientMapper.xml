@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.zhku.mapper.ClientMapper">
+	<resultMap id="clientMap" type="edu.zhku.pojo.Client">
+		<id column="cid" property="cid" jdbcType="VARCHAR" />
+		<result column="cname" property="cname" jdbcType="VARCHAR" />
+		<result column="psw" property="psw" jdbcType="CHAR" />
+		<result column="sex" property="sex" jdbcType="CHAR" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="job" property="job" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="CHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="email" property="eMail" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 使用动态sql，通过if判断，对满足条件进行sql语句拼接 -->
+	<!-- 查询时，通过ItemVo包装类中的itemExpend属性进行传递 -->
+	<sql id="query_client_where">
+		<!-- 属性不能为空 -->
+		<if test="cid != null">
+			cid = #{cid}
+		</if>
+		<if test="psw != null">
+			and psw = #{psw}
+		</if>
+	</sql>
+	<select id="findClient" parameterType="edu.zhku.pojo.Client" resultMap="clientMap">
+		select * from t_client
+		<where>
+			<include refid="query_client_where"></include>
+		</where>
+	</select>
+
+	<insert id="regist" parameterType="edu.zhku.pojo.Client">
+		insert into t_client
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="cid != null">
+				cid,
+			</if>
+			<if test="cname != null">
+				cname,
+			</if>
+			<if test="psw != null">
+				psw,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="birthday != null">
+				birthday,
+			</if>
+			<if test="job != null">
+				job,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="eMail != null">
+				email,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="cid != null">
+				#{cid,jdbcType=VARCHAR},
+			</if>
+			<if test="cname != null">
+				#{cname,jdbcType=VARCHAR},
+			</if>
+			<if test="psw != null">
+				#{psw,jdbcType=CHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=CHAR},
+			</if>
+			<if test="birthday != null">
+				#{birthday,jdbcType=DATE},
+			</if>
+			<if test="job != null">
+				#{job,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=CHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="eMail != null">
+				#{eMail,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+
+
+	<update id="update" parameterType="edu.zhku.pojo.Client">
+		update t_client
+		<set>
+			<if test="cname != null">
+				cname = #{cname,jdbcType=VARCHAR},
+			</if>
+			<if test="psw != null">
+				psw = #{psw,jdbcType=CHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=CHAR},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday,jdbcType=DATE},
+			</if>
+			<if test="job != null">
+				job = #{job,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=CHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="eMail != null">
+				email = #{eMail,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where cid = #{cid,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="evaluate" parameterType="edu.zhku.pojo.EVA">
+		insert into t_evaluation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="level != 0">
+				level,
+			</if>
+			<if test="evaluation != null">
+				evaluation,
+			</if>
+			<if test="sid != null">
+				sid,
+			</if>
+			<if test="cid != null">
+				cid,
+			</if>
+			<if test="etime != null">
+				etime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="level != 0">
+				#{level},
+			</if>
+			<if test="evaluation != null">
+				#{evaluation},
+			</if>
+			<if test="sid != null">
+				#{sid},
+			</if>
+			<if test="cid != null">
+				#{cid},
+			</if>
+			<if test="etime != null">
+				#{etime},
+			</if>
+		</trim>
+	</insert>
+	
+	
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+    http://www.springframework.org/schema/data/jpa
+    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+    http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-4.1.xsd
+	http://www.springframework.org/schema/cache
+	http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<!-- 配置handler -->
+	<!-- <bean class="com.xc.controller.ItemsController3"></bean> -->
+
+	<!-- 对于注解中的handler可以单个配置 但是，实际开发建议使用组件扫描,这样就不需要定义handler 可以扫描：controller、service等等 -->
+
+	<context:component-scan base-package="edu.zhku.controller"></context:component-scan>
+
+	<!-- 注解映射器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean> -->
+
+	<!-- 注解适配器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean> -->
+
+	<!-- 使用mvc:annotation-driven 就可以代替配置注解的映射器和适配器 mvc:annotation-driven默认加载了很多的参数绑定方法，比如：json转换解析器默认加载了 
+		实际开发使用mvc:annotation-driven -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+
+
+	<!-- 视图解析器 解析jsp、默认使用jstl标签，classpath下保证有jstl的jar包 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置jsp路径的前缀 -->
+		<property name="prefix" value="/jsp/"></property>
+		<!-- 配置jsp路径的后缀 -->
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<!-- 多个拦截器顺序执行 -->
+		<mvc:interceptor>
+			<!-- /** ： 表示拦截所有url 包括 子路径 -->
+			<mvc:mapping path="/seller/sellerBackground.action" />
+			<bean class="edu.zhku.interceptor.SellerLoginInterceptor"></bean>
+		</mvc:interceptor>
+
+		<mvc:interceptor>
+			<!-- /** ： 表示拦截所有url 包括 子路径 -->
+			<mvc:mapping path="/client/clientBackground.action" />
+			<bean class="edu.zhku.interceptor.ClientLoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- 文件上传 multipart解析器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大为5MB -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+
+
+
+</beans>

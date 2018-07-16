@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="/client_relationship_manager/js/jquery-1.11.2.min.js"></script>
+		<script type="text/javascript" src="/client_relationship_manager/js/zdialog.js"></script>
+		<link type="text/css" rel="stylesheet" href="/client_relationship_manager/css/zdialog.css">
+		<script>
+			$(function() {
+				$("#upload").click(function() {
+					var formData = new FormData();
+					formData.append("fileModel", document.getElementById("fileModel").files[0]);
+					$.ajax({
+						url: "/client_relationship_manager/seller/fileModelUpload.action",
+						type: "POST",
+						data: formData,
+						/**
+						 *必须false才会自动加上正确的Content-Type
+						 */
+						contentType: false,
+						/**
+						 * 必须false才会避开jQuery对 formdata 的默认处理
+						 * XMLHttpRequest会对 formdata 进行正确的处理
+						 */
+						processData: false,
+						success: function(data) {
+							if(data.flag == 1) {
+								showDialog("上传成功！");
+							}else if(data.flag == 0) {
+								showDialog("上传失败！");
+							}
+						},
+						error: function() {
+							showDialog("上传失败！");
+						}
+					});
+				});
+			});
+
+			function showDialog(tip){
+
+				$.DialogByZ.Alert({Title: "提示", Content: tip,BtnL:"确定",FunL:alerts});
+			}
+
+	        function alerts(){
+	    	   
+	        	  $.DialogByZ.Close();
+	        }
+		</script>
+	</head>
+
+	<body>
+		<input type="file" name="fileModel" id="fileModel" />
+		<input type="button" value="上传" id="upload" />
+	</body>
+
+</html>
+

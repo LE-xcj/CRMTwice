@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>仲恺销售员</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords"
+	content="Innovative Login Form template Responsive, Login form web template,Flat Pricing tables,Flat Drop downs  Sign up Web Templates, Flat Web Templates, Login sign up Responsive web template, SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- Custom Theme files -->
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<!-- //Custom Theme files -->
+<!-- web font -->
+<link href='//fonts.googleapis.com/css?family=Text+Me+One'
+	rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+ 
+<link type="text/css" rel="stylesheet" href="css/zdialog.css">
+<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="js/zdialog.js"></script>
+
+
+<!-- //web font -->
+<!-- js -->
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+<script src="js/easyResponsiveTabs.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+		$(document).ready(function () {
+			$('#horizontalTab').easyResponsiveTabs({
+				type: 'default', //Types: default, vertical, accordion           
+				width: 'auto', //auto or any width like 600px
+				fit: true   // 100% fit in a container
+			});
+		});
+
+		function canRegist(){
+			var sid = $("#r_sid").val();
+			var canRegist = false;
+			$.ajax({
+				type:"post",
+				url:"/client_relationship_manager/seller/canRegist.action",
+				async:false,
+				data:{sid:sid},
+				success: function(data){
+					var action = data.action;
+					var flag = data.flag;
+					if(flag == 1){
+						var tip = "该工号已经注册过!";
+						showDialog(tip);
+						canRegist = false;
+					}else{
+						canRegist = true;
+					}
+				}
+			});
+
+			return canRegist;
+		}
+
+		function canLogin(){
+			var sid = $("#l_sid").val();
+			var psw = $("#l_psw").val();
+			var canLogin = false;
+			$.ajax({
+				type:"post",
+				url:"/client_relationship_manager/seller/canLogin.action",
+				async:false,
+				data:{sid:sid, psw:psw},
+				success: function(data){
+					var action = data.action;
+					var flag = data.flag;
+					console.info(data);
+					console.info(flag);
+					if(flag == 0){
+						var tip = "工号和密码不匹配!";
+						showDialog(tip);
+						canLogin = false;
+					}else{
+						canLogin = true;
+					}
+				}
+			});
+
+			console.info(canLogin);
+			<!-- 不要放在异步请求中，晕死 -->
+			return canLogin;
+		}
+
+		function showDialog(tip){
+/* 			$("#tip").html(tip)
+			$("#dialog").dialog(); */
+
+			$.DialogByZ.Alert({Title: "提示", Content: tip,BtnL:"确定",FunL:alerts});
+		}
+
+        function alerts(){
+    	   
+        	  $.DialogByZ.Close();
+        }
+		
+	   </script>
+<!-- //js -->
+</head>
+<body>
+	<!-- main -->
+	<div class="main">
+		<h1>员工界面</h1>
+		<div class="main-info">
+			<div class="sap_tabs">
+				<div id="horizontalTab"
+					style="display: block; width: 100%; margin: 0px;">
+					<ul class="resp-tabs-list">
+						<li class="resp-tab-item" aria-controls="tab_item-0"><h2>
+								<span>登录</span>
+							</h2></li>
+						<li class="resp-tab-item" aria-controls="tab_item-1"><span>注册</span></li>
+					</ul>
+					<div class="clear"></div>
+					<div class="resp-tabs-container">
+
+						<!--登录table-->
+						<div class="tab-1 resp-tab-content" aria-labelledby="tab_item-0">
+							<div class="agileits-login">
+								<form id="login" action="/client_relationship_manager/seller/login.action" method="post" onsubmit="return canLogin();">
+									<input id="l_sid" type="text" class="email" name="sid" placeholder="员工号"
+										required="" /> <input id="l_psw" type="password" class="password"
+										name="psw" placeholder="密码" required="" />
+									<div class="wthree-text">
+										<ul>
+											<li><label class="anim"> <input id="l_rmb" type="checkbox"
+													class="checkbox" name="remember"> <span> 记住密码</span>
+											</label></li>
+											<li><a href="#">忘记密码?</a></li>
+										</ul>
+										<div class="clear"></div>
+									</div>
+									<div class="w3ls-submit">
+										<div class="submit-text">
+											<input type="submit" value="登录">
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+
+						<!--注册table-->
+						<div class="tab-1 resp-tab-content" aria-labelledby="tab_item-1">
+							<div class="login-top sign-top">
+								<div class="agileits-login">
+									<form id="regist"
+										action="/client_relationship_manager/seller/regist.action"
+										method="post" onsubmit="return canRegist();">
+										<input id="r_sid" type="text" class="email" name="sid"
+											placeholder="员工号" required="" /> <input type="text"
+											name="sname" placeholder="姓名" required=""> <input
+											type="password" class="password" name="psw" placeholder="密码"
+											required="" />
+										<p style="text-align: center;">
+											<label><input type="radio" required="" name="level"
+												value="1" /> 销售人员</label> &nbsp;&nbsp;&nbsp;&nbsp; <label><input
+												type="radio" required="" name="level" value="2" /> 销售负责人</label>
+										</p>
+										<div class="w3ls-submit">
+											<div class="submit-text">
+												<input class="register" type="submit" value="注册">
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--结束注册-->
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div id="dialog" title="警告">
+			<p id="tip"></p>
+		</div>
+		<!-- copyright -->
+		<div class="copyright">
+			<p>© 2018 版权归仲恺农业工程学院拥有</p>
+		</div>
+		<!-- //copyright -->
+	</div>
+	<!-- //main -->
+</body>
+</html>
